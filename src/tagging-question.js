@@ -14,9 +14,8 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
       optionalImage: {type: String},
       answers: { type: Array }, 
       droppedAnswer: { type: String },
-      wrongExplanation: { type: String },
-      rightExplanation: { type: String },
       correctAnswers: { type: Array },
+      explanations: { type: Array},
       submitDisabled: { type: Boolean }
 
 
@@ -31,10 +30,21 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
     this.answers = ["Blue","Light Blue","Sky Blue","Blueish","Azul","Yellow","Pink","Black","RAINBOW!","Red"];
     this.droppedAnswer = null;
     this.correctAnswers = ["Blue","Light Blue","Sky Blue","Blueish","Azul"];
-    this.wrongExplanation = "The sky is definitely blue, I don't think I should need to explain this...";
-    this.rightExplanation = "Correct! The sky is definitely blue."
+    this.incorrectAnswers = ""
     this.submitDisabled = false;
     this.optionalImage = "https://wallpaperaccess.com/full/530682.jpg";
+    this.explanations = [
+      "The sky is blue.",
+      "At sunrise, the sky can appear light blue",
+      "Sky blue is the color of the sky, believe it or not!",
+      "The sky is indeed blueish.",
+      "Azul means blue in spanish.",
+      "The sky is definitely NOT yellow!",
+      "A pink sky would certainly be weird.",
+      "The sky is black at night due to low light, but technically the sky isn't this color...",
+      "HILARIOUS!",
+      "On mars maybe..?"
+    ]
 
     this.shuffleAnswers(); //This is in constructor so the answers are scrambled by default.
   }
@@ -264,15 +274,20 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
       }
     });
 
-
-    if (this.correctAnswers.includes(this.droppedAnswer)) { // Check if droppedAnswer is in correctAnswers array
+    if (this.correctAnswers.includes(this.droppedAnswer)) {
       this.makeItRain();
-      alert(` ${this.rightExplanation}`);
+      alert(`Correct! ${this.explanations[this.correctAnswers.indexOf(this.droppedAnswer)]}`);
     } else {
-      const error = new Audio('https://www.myinstants.com/media/sounds/error_CDOxCYm.mp3');
-      error.play();
-      alert(`Sorry, that is not the answer. ${this.wrongExplanation} RESET AND TRY AGAIN!`);
+      // Check if the dropped answer is among the answers and not among the correct answers
+      if (this.answers.includes(this.droppedAnswer) && !this.correctAnswers.includes(this.droppedAnswer)) {
+        const error = new Audio('https://www.myinstants.com/media/sounds/error_CDOxCYm.mp3');
+        error.play();
+        alert(`Sorry, that is not the correct answer. RESET and try again.`);
+      } 
     }
+
+
+    
     this.submitDisabled = true;
     event.target.disabled = true; //Button disables itself when pressed.
   }

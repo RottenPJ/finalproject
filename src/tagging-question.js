@@ -16,7 +16,7 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
       droppedAnswer: { type: String },
       wrongExplanation: { type: String },
       rightExplanation: { type: String },
-      correctAnswer: { type: String },
+      correctAnswers: { type: Array },
       submitDisabled: { type: Boolean }
 
 
@@ -28,12 +28,15 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
     super();
     this.question = "What color is the sky?";
     this.optionalImage = null;
-    this.answers = ["Blue","Red","Yellow","Pink","Black","RAINBOW!","Light Blue"];
+    this.answers = ["Blue","Light Blue","Sky Blue","Blueish","Azul","Yellow","Pink","Black","RAINBOW!","Red"];
     this.droppedAnswer = null;
-    this.correctAnswer = "Blue";
+    this.correctAnswers = ["Blue","Light Blue","Sky Blue","Blueish","Azul"];
     this.wrongExplanation = "The sky is definitely blue, I don't think I should need to explain this...";
     this.rightExplanation = "Correct! The sky is definitely blue."
     this.submitDisabled = false;
+    this.optionalImage = "https://wallpaperaccess.com/full/530682.jpg";
+
+    this.shuffleAnswers(); //This is in constructor so the answers are scrambled by default.
   }
 
   static get styles() {
@@ -60,7 +63,23 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
         margin: var(--ddd-spacing-1);
 
       }
-      
+
+      .optional-image img
+      {
+        max-height: 500px;
+        margin: var(--ddd-spacing-10);
+        width: auto;
+      }
+
+      .optional-image
+      {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+      }
+
+
       .title-icon img
       {
         height: 80px;
@@ -166,7 +185,7 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
             <h1 class="test-knowledge">Test your knowledge!</h1> <img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fclipartcraft.com%2Fimages%2Fquestion-mark-transparent-background-1.png&f=1&nofb=1&ipt=42894b62a02c15d9247f1d0e36382a5d1a2cfdf522c9d3bb748d6c1bc653c3e2&ipo=images" alt="Icon" />
           </div>
 
-           <slot>${this.optionalImage ? html`<img src="${this.optionalImage}" alt="Optional Image" />` : ''}</slot>
+           <slot class="optional-image">${this.optionalImage ? html`<img src="${this.optionalImage}" alt="Optional Image" />` : ''}</slot>
 
           
           <h2>${this.question}</h2>
@@ -223,7 +242,7 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
  
 
   handleSubmit(event) {
-    if (this.droppedAnswer === this.correctAnswer) {
+    if (this.correctAnswers.includes(this.droppedAnswer)) { // Check if droppedAnswer is in correctAnswers array
       this.makeItRain();
       alert(` ${this.rightExplanation}`);
     } else {
@@ -258,6 +277,7 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
     }
     this.answers = answers; // Update the answers array with the shuffled values
 }
+
 
   
 

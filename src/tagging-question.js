@@ -13,10 +13,10 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
       question: { type: String },
       optionalImage: {type: String},
       answers: { type: Array }, 
+      unshuffledAnswers: {type: Array }, //I had to create an unshuffled answers array list due to issues with the shuffleAnswers() method interfering with index numbers, thus making it impossible to print the correct explanations for wrong answers. This is the only solution I found.
       droppedAnswer: { type: String },
       correctAnswers: { type: Array },
       explanations: { type: Array},
-      submitDisabled: { type: Boolean }
 
 
       
@@ -27,12 +27,12 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
     super();
     this.question = "What color is the sky?";
     this.optionalImage = null;
-    this.answers = ["Blue","Light Blue","Sky Blue","Blueish","Azul","Yellow","Pink","Black","RAINBOW!","Red"];
+    this.answers = ["Red","Blue","Light Blue","Pink","Black","Yellow","Azul","Blueish","RAINBOW!","Sky Blue"];
+    this.unshuffledAnswers = ["Blue","Light Blue","Sky Blue","Blueish","Azul","Yellow","Pink","Black","RAINBOW!","Red"]; 
     this.droppedAnswer = null;
-    this.correctAnswers = ["Blue","Light Blue","Sky Blue","Blueish","Azul"];
-    this.incorrectAnswers = ""
+    this.correctAnswers = ["Blue","Light Blue","Sky Blue","Blueish","Azul"]; //Correct answers in this array list for identification
     this.submitDisabled = false;
-    this.optionalImage = "https://wallpaperaccess.com/full/530682.jpg";
+    this.optionalImage = "https://wallpaperaccess.com/full/530682.jpg"; //If image set to null, iamge is gone and leaves no placeholder seamlessly
     this.explanations = [
       "The sky is blue.",
       "At sunrise, the sky can appear light blue",
@@ -41,13 +41,15 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
       "Azul means blue in spanish.",
       "The sky is definitely NOT yellow!",
       "A pink sky would certainly be weird.",
-      "The sky is black at night due to low light, but technically the sky isn't this color...",
-      "HILARIOUS!",
-      "On mars maybe..?"
+      "The sky is black at night due to low light, but technically the sky isn't this color...", //All explanations in order. These are for my instance, I decided to set them as default for efficiency.
+      "Hope the humor was worth it!",
+      "On red planet mars maybe..? But I'm no astronomer!"
     ]
 
-    this.shuffleAnswers(); //This is in constructor so the answers are scrambled by default.
+     
   }
+
+  //Decided to use similar styles to what I used one project one, I just find them attractive. Also makes the two projects more cohesive.
 
   static get styles() {
     return [
@@ -66,6 +68,7 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
         background-color: var(--ddd-theme-default-pughBlue);
         padding: var(--ddd-spacing-2);
       }
+      
 
       .title-icon
       {
@@ -170,17 +173,18 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
 
     `];
   }
-
+//Sets data of answer  being dragged for easy transfer to drop zone
   handleDragStart(event, answer) 
   {
     event.dataTransfer.setData("text/plain", answer);
   }
 
+//Prevents default of element being dragged
   handleDragOver(event) 
   {
     event.preventDefault();
   }
-
+//Below is where actual transfer happens
   handleDrop(event) 
   {
     event.preventDefault();
@@ -189,8 +193,10 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
     const dropZone = this.shadowRoot.getElementById('drop-zone');
     dropZone.innerHTML = `<p>${answer}</p>`;
   }
+  
 
   
+//For RENDER: Line 228 is from chatGPT. This section of code generates the list of answer choices and creates draggable <p> elements for each index in answers array, where it passes to handleDragStart when drag operation starts
 
 
   render() {
@@ -216,9 +222,9 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
         <div class="potential-answers-wrapper">
           <h4>Answer Choices:</h4>
 
-            <div class = "answer-chips">
+            <div class = "answer-chips"> 
             ${this.answers.map((answer, index) => html`
-              <p id="answer${index + 1}" draggable="true" @dragstart=${(e) => this.handleDragStart(e, answer)}>${answer}</p>
+              <p id="answer${index + 1}" draggable="true" @dragstart=${(e) => this.handleDragStart(e, answer)}>${answer}</p> 
             `)}
              
             </div>
@@ -244,6 +250,7 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
    
     `;
   }
+  //Make it rain code taken from like week 3 or something lol, i just added some audio 
 
   makeItRain() {
     
@@ -266,7 +273,7 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
     this.answers.forEach((answer, index) => {
       // Check if the current answer is in the correct answers list
       if (this.correctAnswers.includes(answer)) {
-        // If it is correct, assign a class to make it glow green
+        // If it is correct, assign a class to make it glow green see above css 
         this.shadowRoot.getElementById(`answer${index + 1}`).classList.add('correct');
       } else {
         // If it is incorrect, assign a class to make it glow red
@@ -278,18 +285,17 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
       this.makeItRain();
       alert(`Correct! ${this.explanations[this.correctAnswers.indexOf(this.droppedAnswer)]}`);
     } else {
-      // Check if the dropped answer is among the answers and not among the correct answers
+      // This part i struggled a lot with, and had to do a lot of research. The shuffle answers interferes with the index numbers, making it extremely difficult to map each answer to its proper explanation. but i was able to figure this out eventually
       if (this.answers.includes(this.droppedAnswer) && !this.correctAnswers.includes(this.droppedAnswer)) {
         const error = new Audio('https://www.myinstants.com/media/sounds/error_CDOxCYm.mp3');
         error.play();
-        alert(`Sorry, that is not the correct answer. RESET and try again.`);
+        alert(`Wrong! ${this.explanations[this.unshuffledAnswers.indexOf(this.droppedAnswer)]}`);
       } 
     }
 
 
     
-    this.submitDisabled = true;
-    event.target.disabled = true; //Button disables itself when pressed.
+    event.target.disabled = true; //SUBMIT Button disables itself when pressed until reactivated by reset button
   }
 
   
@@ -304,8 +310,8 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
     });
 
     
-    this.shuffleAnswers();
-    this.droppedAnswer = null;
+    this.shuffleAnswers(); //Shuffles all answers so people cant cheat
+    this.droppedAnswer = null; //Resets dropped answer.
     const dropZone = this.shadowRoot.getElementById('drop-zone');
     dropZone.innerHTML = `<p>Drop answer here!</p>`;
     this.submitDisabled = false;
@@ -317,12 +323,12 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
   }
 
   shuffleAnswers() {
-    const answers = [...this.answers]; // Create a copy of the answers array
+    const answers = [...this.answers]; // This is from chatGPT, shuffles all answers using functions like math.random
     for (let i = answers.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [answers[i], answers[j]] = [answers[j], answers[i]];
     }
-    this.answers = answers; // Update the answers array with the shuffled values
+    this.answers = answers; // Updates the answers array with the  generated shuffled values
 }
 
 

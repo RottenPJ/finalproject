@@ -120,7 +120,8 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
 
       .answer-chips
       {
-        display: inline;
+        display: flex;
+        
 
       }
 
@@ -128,9 +129,12 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
       {
         background-color: var(--ddd-theme-default-link80);
         text-align: center;
-        margin: var(--ddd-spacing-4);
+        margin: var(--ddd-spacing-2);
         padding: var(--ddd-spacing-1);
         transition: background-color 0.4s ease-in-out;
+        width: 300px;
+        height: 50px;
+        margin-top: var(--ddd-spacing-0);
 
       }
 

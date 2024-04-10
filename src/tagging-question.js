@@ -18,6 +18,8 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
       correctAnswers: { type: Array },
       explanations: { type: Array},
 
+      
+
 
       
     };
@@ -46,7 +48,7 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
       "On red planet mars maybe..? But I'm no astronomer!"
     ]
 
-     
+    this.shuffleAnswers(); //Shuffles answers right when the page loads, different every time.
   }
 
   //Decided to use similar styles to what I used one project one, I just find them attractive. Also makes the two projects more cohesive.

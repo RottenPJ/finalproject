@@ -11,13 +11,16 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
     return {
       ...super.properties,
       question: { type: String },
+      optionalImage: {type: String},
       answer1: { type: String }, //Answer1 is correct answer every time. 
       answer2: { type: String },
       answer3: { type: String },
       answer4: {type: String },
       droppedAnswer: { type: String },
       wrongExplanation: { type: String },
-      correctAnswer: { type: String }
+      rightExplanation: { type: String },
+      correctAnswer: { type: String },
+      submitDisabled: { type: Boolean }
 
 
       
@@ -27,14 +30,16 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
   constructor() {
     super();
     this.question = "What color is the sky?";
+    this.optionalImage = null;
     this.answer1 = "Blue";
     this.answer2 = "Red";
     this.answer3 = "Yellow";
     this.answer4 = "Pink";
     this.droppedAnswer = null;
     this.correctAnswer = "Blue";
-    this.wrongExplanation = "You need to touch grass. Go outside."
-    
+    this.wrongExplanation = "The sky is definitely blue, I don't think I should need to explain this...";
+    this.rightExplanation = "Correct! The sky is definitely blue."
+    this.submitDisabled = false;
   }
 
   static get styles() {
@@ -206,7 +211,7 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
             <h1 class="test-knowledge">Test your knowledge!</h1> <img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fclipartcraft.com%2Fimages%2Fquestion-mark-transparent-background-1.png&f=1&nofb=1&ipt=42894b62a02c15d9247f1d0e36382a5d1a2cfdf522c9d3bb748d6c1bc653c3e2&ipo=images" alt="Icon" />
           </div>
 
-          <slot> </slot> <!-- Slot for an image if needed -->
+           <slot>${this.optionalImage ? html`<img src="${this.optionalImage}" alt="Optional Image" />` : ''}</slot>
 
           
           <h2>${this.question}</h2>
@@ -235,7 +240,7 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
 
 
         <div class="buttons">
-          <button @click=${this.handleSubmit}>Submit</button>
+        <button @click=${this.handleSubmit}>Submit</button>
           <button @click=${this.handleReset}>Reset</button>
         </div>
         
@@ -262,18 +267,44 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
 
  
 
-  handleSubmit() {
+  handleSubmit(event) {
     if (this.droppedAnswer === this.correctAnswer) {
       this.makeItRain();
+      alert(` ${this.rightExplanation}`);
     } else {
-      alert(`Sorry, the correct answer is: ${this.correctAnswer}. ${this.wrongExplanation}`);
+      const error = new Audio('https://www.myinstants.com/media/sounds/error_CDOxCYm.mp3');
+      error.play();
+      alert(`Sorry, that is not the answer. ${this.wrongExplanation} Reset and try again!`);
     }
+    this.submitDisabled = true;
+    event.target.disabled = true; //Button disables itself when pressed.
   }
 
   
 
-  handleReset() {
+  handleReset(event) {
+    this.shuffleAnswers();
     this.droppedAnswer = null;
+    const dropZone = this.shadowRoot.getElementById('drop-zone');
+    dropZone.innerHTML = `<p>Drop answer here!</p>`;
+    this.submitDisabled = false;
+
+    const submitButton = this.shadowRoot.querySelector('.buttons button:first-child'); //This button reactivation on reset is from ChatGPT, but I do understand how it works.
+    if (submitButton) {
+        submitButton.disabled = false;
+    }
+  }
+
+  shuffleAnswers() {
+    const answers = [this.answer1, this.answer2, this.answer3, this.answer4];
+    for (let i = answers.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [answers[i], answers[j]] = [answers[j], answers[i]];
+    }
+    this.answer1 = answers[0];
+    this.answer2 = answers[1];
+    this.answer3 = answers[2];
+    this.answer4 = answers[3];
   }
 
   

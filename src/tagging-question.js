@@ -113,7 +113,7 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
       {
         background-color: var(--ddd-theme-default-link80);
         text-align: center;
-        margin: var(--ddd-spacing-1);
+        margin: var(--ddd-spacing-4);
         padding: var(--ddd-spacing-1);
         transition: background-color 0.4s ease-in-out;
 
@@ -144,6 +144,17 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
 
 
       }
+
+      .correct 
+      {
+        box-shadow: 0 0 10px 2px rgba(0, 255, 0, 1.0);
+      }
+
+
+      .incorrect 
+      {
+        box-shadow: 0 0 10px 2px rgba(255, 0, 0, 1.0);
+     }
 
       
 
@@ -242,6 +253,18 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
  
 
   handleSubmit(event) {
+    this.answers.forEach((answer, index) => {
+      // Check if the current answer is in the correct answers list
+      if (this.correctAnswers.includes(answer)) {
+        // If it is correct, assign a class to make it glow green
+        this.shadowRoot.getElementById(`answer${index + 1}`).classList.add('correct');
+      } else {
+        // If it is incorrect, assign a class to make it glow red
+        this.shadowRoot.getElementById(`answer${index + 1}`).classList.add('incorrect');
+      }
+    });
+
+
     if (this.correctAnswers.includes(this.droppedAnswer)) { // Check if droppedAnswer is in correctAnswers array
       this.makeItRain();
       alert(` ${this.rightExplanation}`);
@@ -257,6 +280,15 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
   
 
   handleReset(event) {
+
+    this.answers.forEach((answer, index) => {
+      const answerElement = this.shadowRoot.getElementById(`answer${index + 1}`); //Removes all the incorrect/correct attributes from each element, therefore removing the glowing red or green colr respectively.
+      if (answerElement) {
+        answerElement.classList.remove('correct', 'incorrect');
+      }
+    });
+
+    
     this.shuffleAnswers();
     this.droppedAnswer = null;
     const dropZone = this.shadowRoot.getElementById('drop-zone');

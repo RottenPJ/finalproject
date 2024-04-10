@@ -12,10 +12,7 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
       ...super.properties,
       question: { type: String },
       optionalImage: {type: String},
-      answer1: { type: String }, //Answer1 is correct answer every time. 
-      answer2: { type: String },
-      answer3: { type: String },
-      answer4: {type: String },
+      answers: { type: Array }, 
       droppedAnswer: { type: String },
       wrongExplanation: { type: String },
       rightExplanation: { type: String },
@@ -31,10 +28,7 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
     super();
     this.question = "What color is the sky?";
     this.optionalImage = null;
-    this.answer1 = "Blue";
-    this.answer2 = "Red";
-    this.answer3 = "Yellow";
-    this.answer4 = "Pink";
+    this.answers = ["Blue","Red","Yellow","Pink","Black","RAINBOW!","Light Blue"];
     this.droppedAnswer = null;
     this.correctAnswer = "Blue";
     this.wrongExplanation = "The sky is definitely blue, I don't think I should need to explain this...";
@@ -93,64 +87,25 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
       .answer-chips
       {
         display: inline;
-        
+
       }
 
-      #answer1
+      .answer-chips p 
       {
         background-color: var(--ddd-theme-default-link80);
         text-align: center;
         margin: var(--ddd-spacing-1);
         padding: var(--ddd-spacing-1);
         transition: background-color 0.4s ease-in-out;
+
       }
 
-      #answer1:hover 
+      .answer-chips p:hover 
       {
         background-color: var(--ddd-theme-default-skyLight);
       }
 
-      #answer2
-      {
-        background-color: var(--ddd-theme-default-link80);
-        text-align: center;
-        margin: var(--ddd-spacing-1);
-        padding: var(--ddd-spacing-1);
-        transition: background-color 0.4s ease-in-out;
-      }
-
-      #answer2:hover 
-      {
-        background-color: var(--ddd-theme-default-skyLight);
-      }
-
-      #answer3
-      {
-        background-color: var(--ddd-theme-default-link80);
-        text-align: center;
-        margin: var(--ddd-spacing-1);
-        padding: var(--ddd-spacing-1);
-        transition: background-color 0.4s ease-in-out;
-      }
-
-      #answer3:hover 
-      {
-        background-color: var(--ddd-theme-default-skyLight);
-      }
-
-      #answer4
-      {
-        background-color: var(--ddd-theme-default-link80);
-        text-align: center;
-        margin: var(--ddd-spacing-1);
-        padding: var(--ddd-spacing-1);
-        transition: background-color 0.4s ease-in-out;
-      }
-
-      #answer4:hover 
-      {
-        background-color: var(--ddd-theme-default-skyLight);
-      }
+      
 
       #drop-zone
       {
@@ -222,10 +177,10 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
           <h4>Answer Choices:</h4>
 
             <div class = "answer-chips">
-             <p id="answer1" draggable="true" @dragstart=${(e) => this.handleDragStart(e, this.answer1)}>${this.answer1}</p>
-             <p id="answer2" draggable="true" @dragstart=${(e) => this.handleDragStart(e, this.answer2)}>${this.answer2}</p>
-             <p id="answer3" draggable="true" @dragstart=${(e) => this.handleDragStart(e, this.answer3)}>${this.answer3}</p>
-             <p id="answer4" draggable="true" @dragstart=${(e) => this.handleDragStart(e, this.answer4)}>${this.answer4}</p>
+            ${this.answers.map((answer, index) => html`
+              <p id="answer${index + 1}" draggable="true" @dragstart=${(e) => this.handleDragStart(e, answer)}>${answer}</p>
+            `)}
+             
             </div>
         
         </div>
@@ -274,7 +229,7 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
     } else {
       const error = new Audio('https://www.myinstants.com/media/sounds/error_CDOxCYm.mp3');
       error.play();
-      alert(`Sorry, that is not the answer. ${this.wrongExplanation} Reset and try again!`);
+      alert(`Sorry, that is not the answer. ${this.wrongExplanation} RESET AND TRY AGAIN!`);
     }
     this.submitDisabled = true;
     event.target.disabled = true; //Button disables itself when pressed.
@@ -296,16 +251,13 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
   }
 
   shuffleAnswers() {
-    const answers = [this.answer1, this.answer2, this.answer3, this.answer4];
+    const answers = [...this.answers]; // Create a copy of the answers array
     for (let i = answers.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [answers[i], answers[j]] = [answers[j], answers[i]];
     }
-    this.answer1 = answers[0];
-    this.answer2 = answers[1];
-    this.answer3 = answers[2];
-    this.answer4 = answers[3];
-  }
+    this.answers = answers; // Update the answers array with the shuffled values
+}
 
   
 

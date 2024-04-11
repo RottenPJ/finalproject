@@ -13,13 +13,10 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
       question: { type: String },
       optionalImage: {type: String},
       answers: { type: Array }, 
-      unshuffledAnswers: {type: Array }, //I had to create an unshuffled answers array list due to issues with the shuffleAnswers() method interfering with index numbers, thus making it impossible to print the correct explanations for wrong answers. This is the only solution I found.
+      unshuffledAnswers: {type: Array }, //I had to create an unshuffled answers array list due to issues with the shuffleAnswers() method interfering with index numbers, thus making it impossible to print the correct explanations for wrong answers. This is the only solution I found, but it works sooo......
       droppedAnswer: { type: String },
       correctAnswers: { type: Array },
       explanations: { type: Array},
-
-      
-
 
       
     };
@@ -34,7 +31,7 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
     this.droppedAnswer = null;
     this.correctAnswers = ["Blue","Light Blue","Sky Blue","Blueish","Azul"]; //Correct answers in this array list for identification
     this.submitDisabled = false;
-    this.optionalImage = "https://wallpaperaccess.com/full/530682.jpg"; //If image set to null, iamge is gone and leaves no placeholder seamlessly
+    this.optionalImage = "https://wallpaperaccess.com/full/530682.jpg"; //If image set to null, iamge is gone and leaves no placeholder *seamlessly*
     this.explanations = [
       "The sky is blue.",
       "At sunrise, the sky can appear light blue",
@@ -43,7 +40,7 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
       "Azul means blue in spanish.",
       "The sky is definitely NOT yellow!",
       "A pink sky would certainly be weird.",
-      "The sky is black at night due to low light, but technically the sky isn't this color...", //All explanations in order. These are for my instance, I decided to set them as default for efficiency.
+      "The sky is black at night due to low light, but technically the sky isn't this color...", //All explanations in order. These are for my instance, I decided to set them as default for efficiency and demoing in a real environment or presentation
       "Hope the humor was worth it!",
       "On red planet mars maybe..? But I'm no astronomer!"
     ]
@@ -212,7 +209,7 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
   
 
   
-//For RENDER: Line 228 is from chatGPT. This section of code generates the list of answer choices and creates draggable <p> elements for each index in answers array, where it passes to handleDragStart when drag operation starts
+//For RENDER: Line 241 is from chatGPT. This section of code generates the list of answer choices and creates draggable <p> elements for each index in answers array, where it passes to handleDragStart when drag operation starts
 
 
   render() {
@@ -268,9 +265,9 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
     `;
   }
 
-//2 methods below allow for a double click or tap to put an answer in the drop zone, making it functional on phones.
-//I got this method concept from one of my pod mates projects, firstUpdated runs after the first update of DOM
-//Code within gives an evenet listener to each chip looking for a double tap. Line 281 calculates time between each tap. tapLength < 500 ensures time difference between two taps is less than 500ms, then making it a double tap. tapLength > 0 makes sure this is not the first tap
+//2 methods below allow for a double tap to put an answer in the drop zone, making it functional on phones.
+//I got this method concept from one of my pod mates projects, firstUpdated runs after the first update of DOM (basically runs all the time)
+//Code within gives an evenet listener to each chip looking for a double tap. Line 281 calculates time between each tap. tapLength < 500 ensures time difference between two taps is less than 500ms, then making it a double tap and not two randomly spaced out taps tapLength > 0 makes sure this is not the first tap
 firstUpdated() {
   const answerChips = this.shadowRoot.querySelectorAll('.answer-chips p');
   answerChips.forEach(chip => {
@@ -311,7 +308,7 @@ firstUpdated() {
   }
 
  
-
+//This runs every time submit is pressed.
   handleSubmit(event) {
     this.answers.forEach((answer, index) => {
       // Check if the current answer is in the correct answers list
@@ -356,10 +353,10 @@ firstUpdated() {
     this.shuffleAnswers(); //Shuffles all answers so people cant cheat
     this.droppedAnswer = null; //Resets dropped answer.
     const dropZone = this.shadowRoot.getElementById('drop-zone');
-    dropZone.innerHTML = `<p>Drop answer here!</p>`;
+    dropZone.innerHTML = `<p>Drop answer here!</p>`; //Reset drop zone to filler text.
     this.submitDisabled = false;
 
-    const submitButton = this.shadowRoot.querySelector('.buttons button:first-child'); //This button reactivation on reset is from ChatGPT, but I do understand how it works.
+    const submitButton = this.shadowRoot.querySelector('.buttons button'); //Reactivate submit button when reset is pressed.
     if (submitButton) {
         submitButton.disabled = false;
     }
@@ -374,8 +371,6 @@ firstUpdated() {
     this.answers = answers; // Updates the answers array with the  generated shuffled values
 }
 
-
-  
 
   
 }

@@ -84,7 +84,7 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
         
         margin: var(--ddd-spacing-10);
         width: auto;
-        max-width: 80%; //Stops image overflow from happening on phones
+        max-width: 65%; //Stops image overflow from happening on phones
         
       }
 

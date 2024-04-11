@@ -64,11 +64,14 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
 
       .question-wrapper
       {
-        margin: var(--ddd-spacing-2); 
+        margin: var(--ddd-spacing-1); 
         color: var(--ddd-theme-default-beaverBlue);
         border: 3px solid black;
         background-color: var(--ddd-theme-default-pughBlue);
         padding: var(--ddd-spacing-2);
+        max-width: 80%;
+        
+        
       }
       
 
@@ -81,9 +84,11 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
 
       .optional-image img
       {
-        max-height: 500px;
+        
         margin: var(--ddd-spacing-10);
         width: auto;
+        max-width: 80%; //Stops image overflow from happening on phones
+        
       }
 
       .optional-image
@@ -91,6 +96,7 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
         display: flex;
         justify-content: center;
         align-items: center;
+        
 
       }
 
@@ -121,7 +127,10 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
       .answer-chips
       {
         display: flex;
-        
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+      
 
       }
 
@@ -132,9 +141,10 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
         margin: var(--ddd-spacing-2);
         padding: var(--ddd-spacing-1);
         transition: background-color 0.4s ease-in-out;
-        width: 300px;
+        width: 100px;
         height: 50px;
         margin-top: var(--ddd-spacing-0);
+        flex-wrap: wrap;
 
       }
 
@@ -207,9 +217,10 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
 
   render() {
     return html`
-     <confetti-container id="confetti">
+     
     
     <div class= "question-wrapper">
+    <confetti-container id="confetti">
 
     
         <div class= "question">
@@ -250,12 +261,38 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
         <button @click=${this.handleSubmit}>Submit</button>
           <button @click=${this.handleReset}>Reset</button>
         </div>
-        
+        </confetti-container>
     </div>
-    </confetti-container>
+    
    
     `;
   }
+
+//2 methods below allow for a double click or tap to put an answer in the drop zone, making it functional on phones.
+//I got this method concept from one of my pod mates projects, firstUpdated runs after the first update of DOM
+//Code within gives an evenet listener to each chip looking for a double tap. Line 281 calculates time between each tap. tapLength < 500 ensures time difference between two taps is less than 500ms, then making it a double tap. tapLength > 0 makes sure this is not the first tap
+firstUpdated() {
+  const answerChips = this.shadowRoot.querySelectorAll('.answer-chips p');
+  answerChips.forEach(chip => {
+    let lastTap = 0;
+    chip.addEventListener('touchstart', event => {
+      const currentTime = new Date().getTime();
+      const tapLength = currentTime - lastTap;
+      if (tapLength < 500 && tapLength > 0) {
+        event.preventDefault();
+        this.handleChipDoubleTap(chip.textContent);
+      }
+      lastTap = currentTime;
+    });
+  });
+}
+
+  handleChipDoubleTap(answer) {
+    this.droppedAnswer = answer;
+    const dropZone = this.shadowRoot.getElementById('drop-zone');
+    dropZone.innerHTML = `<p>${this.droppedAnswer}</p>`;
+  }
+  
   //Make it rain code taken from like week 3 or something lol, i just added some audio 
 
   makeItRain() {
@@ -295,7 +332,7 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
       if (this.answers.includes(this.droppedAnswer) && !this.correctAnswers.includes(this.droppedAnswer)) {
         const error = new Audio('https://www.myinstants.com/media/sounds/error_CDOxCYm.mp3');
         error.play();
-        alert(`Wrong! ${this.explanations[this.unshuffledAnswers.indexOf(this.droppedAnswer)]}`);
+        alert(`Wrong! Reset and try again. ${this.explanations[this.unshuffledAnswers.indexOf(this.droppedAnswer)]}`);
       } 
     }
 

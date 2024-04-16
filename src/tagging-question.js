@@ -274,7 +274,7 @@ firstUpdated() {
     let lastTap = 0;
     chip.addEventListener('touchstart', event => {
       const currentTime = new Date().getTime();
-      const tapLength = currentTime - lastTap;
+      const tapLength = currentTime - lastTap; //Found this online.
       if (tapLength < 500 && tapLength > 0) {
         event.preventDefault();
         this.handleChipDoubleTap(chip.textContent);

@@ -186,7 +186,7 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
 
     `];
   }
-//Sets data of answer  being dragged for easy transfer to drop zone
+//Sets data of answer  being dragged for easy transfer to drop zone. Gets the value that will be placed into drop zone if released
   handleDragStart(event, answer) 
   {
     event.dataTransfer.setData("text/plain", answer);
@@ -266,7 +266,7 @@ export class TaggingQuestion extends DDD { //PERSON GRADING THIS: PLEASE LET ME 
   }
 
 //2 methods below allow for a double tap to put an answer in the drop zone, making it functional on phones.
-//I got this method concept from one of my pod mates projects, firstUpdated runs after the first update of DOM (basically runs all the time)
+//I got this method concept from online, firstUpdated runs after the first update of DOM (basically runs all the time)
 //Code within gives an evenet listener to each chip looking for a double tap. Line 281 calculates time between each tap. tapLength < 500 ensures time difference between two taps is less than 500ms, then making it a double tap and not two randomly spaced out taps tapLength > 0 makes sure this is not the first tap
 firstUpdated() {
   const answerChips = this.shadowRoot.querySelectorAll('.answer-chips p');
